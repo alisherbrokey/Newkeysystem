@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>QULF FAOL — RoskyMods</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0612;
+    --bg-1:#150a28;
+    --glass:rgba(255,255,255,0.045);
+    --glass-border:rgba(176,38,255,0.28);
+    --violet:#b026ff;
+    --violet-soft:#8b3bd6;
+    --cyan:#22e5ff;
+    --text:#f2eefb;
+    --muted:#8b83a8;
+    --muted-dim:#5c5578;
+    --lock-gold:#e6b93a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(176,38,255,0.16), transparent 45%),
+      radial-gradient(circle at 90% 85%, rgba(34,229,255,0.10), transparent 40%),
+      linear-gradient(165deg, var(--bg-0) 0%, var(--bg-1) 55%, var(--bg-0) 100%);
+    color:var(--text);
+    min-height:100%;
+    display:flex;
+    justify-content:center;
+    padding:48px 18px 80px;
+    overflow-x:hidden;
+  }
+  .bg-grid{
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(176,38,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(176,38,255,0.05) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(circle at 50% 30%, black, transparent 75%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{position:relative; z-index:1; width:100%; max-width:460px;}
+
+  /* eyebrow */
+  .eyebrow{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:12.5px; letter-spacing:6px; font-weight:600;
+    color:var(--cyan);
+    margin-bottom:28px;
+  }
+  .eyebrow::before, .eyebrow::after{
+    content:''; height:1px; width:34px;
+    background:linear-gradient(90deg, transparent, var(--cyan));
+  }
+  .eyebrow::after{background:linear-gradient(90deg, var(--cyan), transparent);}
+
+  /* signature: lock/key emblem with progress ring */
+  .emblem{
+    width:132px; height:132px;
+    margin:0 auto 26px;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .emblem svg{position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg);}
+  .ring-track{fill:none; stroke:rgba(176,38,255,0.14); stroke-width:3;}
+  .ring-seg{
+    fill:none; stroke:var(--cyan); stroke-width:3; stroke-linecap:round;
+    stroke-dasharray:113.1; stroke-dashoffset:113.1;
+    filter:drop-shadow(0 0 6px rgba(34,229,255,0.9));
+    transition:stroke-dashoffset .8s cubic-bezier(.65,0,.35,1);
+  }
+  .lock-core{
+    width:78px; height:78px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(176,38,255,0.35), rgba(21,10,40,0.9));
+    border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 26px rgba(176,38,255,0.35), inset 0 0 18px rgba(0,0,0,0.4);
+  }
+  .lock-icon{width:32px; height:32px; position:relative;}
+  .shackle{
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:18px; height:16px; border:3px solid var(--lock-gold);
+    border-bottom:none; border-radius:10px 10px 0 0;
+    transition:transform .6s cubic-bezier(.34,1.56,.64,1), border-color .5s;
+    transform-origin:0% 100%;
+  }
+  .lock-icon.open .shackle{
+    transform:translateX(-50%) rotate(-38deg) translateY(-2px);
+    border-color:var(--cyan);
+  }
+  .body-box{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:26px; height:19px; border-radius:5px;
+    background:linear-gradient(160deg, var(--lock-gold), #b8891f);
+    transition:background .5s;
+  }
+  .lock-icon.open .body-box{background:linear-gradient(160deg, var(--cyan), #1298ac);}
+
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:29px; font-weight:700; text-align:center; line-height:1.22;
+    letter-spacing:-0.3px;
+    background:linear-gradient(100deg,#fff 20%, #d9c4ff 60%, var(--cyan) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin-bottom:12px;
+  }
+  .sub{
+    text-align:center; color:var(--muted); font-size:14px; line-height:1.6;
+    max-width:340px; margin:0 auto 34px;
+  }
+  .sub b{color:#c9b6ff; font-weight:600;}
+
+  .progress-label{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'Space Grotesk',sans-serif; font-size:12.5px;
+    color:var(--muted); letter-spacing:0.5px; margin-bottom:9px;
+  }
+  .progress-label span:last-child{color:var(--cyan); font-weight:600;}
+  .progress-track{
+    height:5px; border-radius:6px; background:rgba(255,255,255,0.06);
+    overflow:hidden; margin-bottom:30px;
+  }
+  .progress-fill{
+    height:100%; width:0%; border-radius:6px;
+    background:linear-gradient(90deg, var(--violet), var(--cyan));
+    box-shadow:0 0 10px rgba(34,229,255,0.6);
+    transition:width .7s cubic-bezier(.65,0,.35,1);
+  }
+
+  .steps{display:flex; flex-direction:column; gap:14px;}
+  .step{
+    position:relative;
+    background:var(--glass);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:16px;
+    padding:18px 18px;
+    display:flex; align-items:center; gap:15px;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    transition:border-color .4s, box-shadow .4s, opacity .4s, transform .4s;
+    text-decoration:none; color:inherit;
+  }
+  .step.locked{opacity:0.42; pointer-events:none;}
+  .step.active{
+    border-color:var(--glass-border);
+    box-shadow:0 0 0 1px rgba(176,38,255,0.15), 0 10px 34px -14px rgba(176,38,255,0.55);
+  }
+  .step.active:active{transform:scale(0.98);}
+  .step.done{border-color:rgba(34,229,255,0.35);}
+
+  .step-badge{
+    flex-shrink:0; width:42px; height:42px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px;
+    background:linear-gradient(140deg, var(--violet), #6d1fc9);
+    box-shadow:0 4px 14px -4px rgba(176,38,255,0.7);
+  }
+  .step.done .step-badge{background:linear-gradient(140deg, var(--cyan), #0e9fb3);}
+  .step.locked .step-badge{background:rgba(255,255,255,0.06); box-shadow:none;}
+  .step-badge svg{width:19px; height:19px;}
+
+  .step-text{flex:1; min-width:0;}
+  .step-title{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15.5px;}
+  .step-state{font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .step.active .step-state{color:var(--cyan);}
+  .step.done .step-state{color:#7fe8c9;}
+
+  .step-icon-right{flex-shrink:0; width:20px; height:20px; color:var(--muted-dim);}
+  .step.active .step-icon-right{color:var(--cyan);}
+
+  .status-pulse{
+    position:absolute; top:16px; right:16px; width:8px; height:8px; border-radius:50%;
+    background:var(--cyan); box-shadow:0 0 8px var(--cyan);
+    animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1; transform:scale(1);} 50%{opacity:0.35; transform:scale(0.7);}}
+
+  .waiting-note{
+    font-size:12px; color:var(--muted-dim); text-align:center; margin-top:22px;
+    letter-spacing:0.2px;
+  }
+
+  .footer{
+    text-align:center; margin-top:44px; font-family:'Space Grotesk',sans-serif;
+    font-size:11.5px; letter-spacing:2px; color:var(--muted-dim);
+  }
+  .footer span{color:var(--violet-soft);}
+
+
+  .key-result{margin-top:20px;padding:16px;border:1px solid rgba(34,229,255,.35);border-radius:16px;background:rgba(34,229,255,.05);box-shadow:0 0 28px rgba(34,229,255,.08);}
+  .key-result-label{font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:2px;color:var(--cyan);margin-bottom:9px;}
+  .key-result-box{display:flex;align-items:center;gap:8px;}
+  .key-result-box code{flex:1;min-width:0;overflow:auto;white-space:nowrap;padding:12px;border-radius:10px;background:#070511;border:1px solid rgba(255,255,255,.08);font-size:13px;color:#fff;}
+  .key-result-box button{border:0;border-radius:10px;padding:12px 10px;background:linear-gradient(135deg,var(--violet),#6d1fc9);color:#fff;font-weight:700;font-size:10px;white-space:nowrap;cursor:pointer;}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="wrap">
+
+  <div class="eyebrow">QULF FAOL</div>
+
+  <div class="emblem">
+    <svg viewBox="0 0 44 44">
+      <circle class="ring-track" cx="22" cy="22" r="18"></circle>
+      <circle class="ring-seg" id="seg1" cx="22" cy="22" r="18" style="stroke-dasharray:37.7; stroke-dashoffset:37.7;"></circle>
+      <circle class="ring-seg" id="seg2" cx="22" cy="22" r="18" style="stroke-dasharray:37.7; stroke-dashoffset:37.7;"></circle>
+      <circle class="ring-seg" id="seg3" cx="22" cy="22" r="18" style="stroke-dasharray:37.7; stroke-dashoffset:37.7;"></circle>
+    </svg>
+    <div class="lock-core">
+      <div class="lock-icon" id="lockIcon">
+        <div class="shackle"></div>
+        <div class="body-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <h1>Havolani ochish uchun<br>bosqichlarni bajar</h1>
+  <p class="sub">Har bir bosqichni bosib qo'llab-quvvatla — <b>sahifadan chiqib qaytganingda</b> keyingi bosqich avtomatik ochiladi.</p>
+
+  <div class="progress-label">
+    <span>PROGRESS</span>
+    <span id="progressText">0 / 3 bajarildi</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="steps" id="steps">
+    <a class="step active" id="step1" data-step="1" href="https://youtube.com/@old_rosky?si=35vmn5YUiD9rhERb" target="_blank" rel="noopener">
+      <div class="status-pulse"></div>
+      <div class="step-badge">1</div>
+      <div class="step-text">
+        <div class="step-title">YouTube — Obuna bo'l</div>
+        <div class="step-state">Hozir ochiq</div>
+      </div>
+      <svg class="step-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
+
+    <a class="step locked" id="step2" data-step="2" href="https://t.me/roskyloder" target="_blank" rel="noopener">
+      <div class="step-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></div>
+      <div class="step-text">
+        <div class="step-title">Telegram — Kanalga qo'shil</div>
+        <div class="step-state">Qulflangan</div>
+      </div>
+      <svg class="step-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
+
+    <a class="step locked" id="step3" data-step="3" href="https://www.instagram.com/roskyalisher?igsh=MWhhaW9lMGZtaTZxaA==" target="_blank" rel="noopener">
+      <div class="step-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg></div>
+      <div class="step-text">
+        <div class="step-title">Instagram — Follow qil</div>
+        <div class="step-state">Qulflangan</div>
+      </div>
+      <svg class="step-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
+
+    <!-- final unlocked state, hidden until all 3 steps are complete -->
+    <a class="step" id="stepFinal" href="https://nullnmods-key-auth.netlify.app/" target="_blank" rel="noopener"
+       style="display:none; border-color:rgba(34,229,255,0.5); box-shadow:0 0 0 1px rgba(34,229,255,0.25), 0 10px 34px -14px rgba(34,229,255,0.6); cursor:pointer;">
+      <div class="step-badge" style="background:linear-gradient(140deg, var(--cyan), #0e9fb3);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0a0612" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <div class="step-text">
+        <div class="step-title">Kalit olish</div>
+        <div class="step-state" style="color:#7fe8c9;">Barcha bosqichlar bajarildi — bosib kalitni ol</div>
+      </div>
+      <svg class="step-icon-right" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </a>
+  </div>
+
+  <div id="keyResult" class="key-result" style="display:none;">
+    <div class="key-result-label">TAYYOR KEY</div>
+    <div class="key-result-box">
+      <code id="returnedKey">KEY</code>
+      <button id="copyKey" type="button">TAYYOR, NUSXALASH</button>
+    </div>
+  </div>
+
+  <p class="waiting-note" id="waitingNote">1-bosqichni bosib boshla</p>
+
+  <div class="footer">Yaratuvchi: <span>@Roskybro</span></div>
+</div>
+
+<script>
+  // Progress lives only in memory for this page session — reloading resets it
+  // (matches the "don't refresh" instruction shown to the user).
+  let unlocked = 1;      // highest step currently unlocked (1,2,3)
+  let completed = 0;     // steps fully completed
+  let pendingStep = null;
+  let clickTime = 0;
+  const MIN_AWAY_MS = 2500; // guards against instantly tabbing back
+
+  const stepEls = {
+    1: document.getElementById('step1'),
+    2: document.getElementById('step2'),
+    3: document.getElementById('step3'),
+  };
+  const segs = { 1: document.getElementById('seg1'), 2: document.getElementById('seg2'), 3: document.getElementById('seg3') };
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const waitingNote = document.getElementById('waitingNote');
+  const lockIcon = document.getElementById('lockIcon');
+  const stepFinal = document.getElementById('stepFinal');
+
+  function markDone(n){
+    const el = stepEls[n];
+    el.classList.remove('active');
+    el.classList.add('done');
+    el.querySelector('.step-badge').innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="#0a0612" stroke-width="2.5" width="18" height="18"><path d="M20 6L9 17l-5-5"/></svg>';
+    el.querySelector('.step-state').textContent = 'Bajarildi';
+    const pulse = el.querySelector('.status-pulse');
+    if(pulse) pulse.remove();
+    segs[n].style.strokeDashoffset = '0';
+  }
+
+  function unlockNext(n){
+    const el = stepEls[n];
+    if(!el) return;
+    el.classList.remove('locked');
+    el.classList.add('active');
+    el.querySelector('.step-state').textContent = 'Hozir ochiq';
+    const badge = el.querySelector('.step-badge');
+    badge.style.background = 'linear-gradient(140deg, var(--violet), #6d1fc9)';
+    badge.style.boxShadow = '0 4px 14px -4px rgba(176,38,255,0.7)';
+    const pulse = document.createElement('div');
+    pulse.className = 'status-pulse';
+    el.appendChild(pulse);
+  }
+
+  function updateProgressUI(){
+    progressText.textContent = completed + ' / 3 bajarildi';
+    progressFill.style.width = (completed/3*100) + '%';
+  }
+
+  function finish(){
+    lockIcon.classList.add('open');
+    stepFinal.style.display = 'flex';
+    stepFinal.style.textDecoration = 'none';
+    stepFinal.style.color = 'inherit';
+    waitingNote.textContent = 'Ajoyib! Endi "Kalit olish" ni bosing 🎉';
+  }
+
+  Object.values(stepEls).forEach(el => {
+    el.addEventListener('click', () => {
+      if(el.classList.contains('locked')) return;
+      const n = parseInt(el.dataset.step, 10);
+      pendingStep = n;
+      clickTime = Date.now();
+      waitingNote.textContent = 'Havola ochildi — bajarib, shu sahifaga qayt';
+    });
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible' && pendingStep){
+      const elapsed = Date.now() - clickTime;
+      if(elapsed >= MIN_AWAY_MS){
+        completeStep(pendingStep);
+      } else {
+        // returned too fast — give it a moment then check once more
+        setTimeout(() => {
+          if(pendingStep) completeStep(pendingStep);
+        }, MIN_AWAY_MS - elapsed);
+      }
+    }
+  });
+
+  function completeStep(n){
+    if(n > completed){
+      completed = n;
+      markDone(n);
+      updateProgressUI();
+      if(n < 3){
+        unlockNext(n+1);
+        waitingNote.textContent = (n+1) + '-bosqich ochildi';
+      } else {
+        finish();
+      }
+    }
+    pendingStep = null;
+  }
+
+  // If the external key site redirects back with ?key=..., show the key here.
+  const returned = new URLSearchParams(location.search).get('key');
+  const keyResult = document.getElementById('keyResult');
+  const returnedKey = document.getElementById('returnedKey');
+  const copyKey = document.getElementById('copyKey');
+  if(returned){
+    returnedKey.textContent = returned;
+    keyResult.style.display = 'block';
+    waitingNote.textContent = 'Key tayyor — nusxalashingiz mumkin.';
+  }
+  copyKey.addEventListener('click', async () => {
+    const value = returnedKey.textContent;
+    try { await navigator.clipboard.writeText(value); copyKey.textContent='NUSXALANDI ✓'; setTimeout(()=>copyKey.textContent='TAYYOR, NUSXALASH',1800); }
+    catch(e){ copyKey.textContent='QO‘LDA NUSXALANG'; }
+  });
+</script>
+</body>
+</html>
